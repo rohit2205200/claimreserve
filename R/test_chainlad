@@ -1,0 +1,8 @@
+test_that("multiplication works", {
+  expect_equal(2 * 2, 4)
+})
+test_that("link ratios calculate accurately", {
+  toy_mat <- matrix(c(100, 150, 200, 300), nrow = 2, byrow = TRUE)
+  res <- fit_chain_ladder(toy_mat)
+  expect_equal(res$factors[1], 1.5)
+})
