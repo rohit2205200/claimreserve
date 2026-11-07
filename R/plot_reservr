@@ -1,0 +1,10 @@
+#' Plot Claims Development Curves
+#'
+#' @param triangle A cumulative run-off matrix.
+#' @export
+plot_development <- function(triangle) {
+  graphics::matplot(t(triangle), type = "b", pch = 19, lty = 1,
+                    xlab = "Development Period", ylab = "Cumulative Claims",
+                    main = "Loss Development Progression")
+  graphics::grid()
+}
