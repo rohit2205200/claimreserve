@@ -1,0 +1,104 @@
+---
+title: "Getting Started with claimreserve"
+author: "Rohit Patil"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with claimreserve}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# claimreserve ![](man/figures/logo.png){align="right" height="120"}
+
+<!-- badges: start -->
+
+[![R-CMD-check](https://img.shields.io/badge/R--CMD--check-passing-brightgreen.svg)]() [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+<!-- badges: end -->
+
+`claimreserve` provides lightweight, fast utilities to transform raw transactional claims records into loss run-off triangles and estimate **Incurred But Not Reported (IBNR)** claims reserves using the standard Chain-Ladder development technique.
+
+------------------------------------------------------------------------
+
+## Features
+
+- **Automated Triangle Aggregation**: Convert transactional origin/development records directly into cumulative run-off matrices.
+- **Volume-Weighted Link Ratios**: Vectorized calculation of loss development factors ($f_j$).
+- **IBNR Estimation**: Automatic projection of unobserved claims and net required reserves.
+- **Diagnostic Plotting**: Built-in visual check for claims maturity curves across accident years.
+
+------------------------------------------------------------------------
+
+## Installation
+
+You can install the development version of `claimreserve` from GitHub:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("your-username/claimreserve")
+```
+
+Or install locally from source:
+
+``` r
+devtools::install()
+```
+
+------------------------------------------------------------------------
+
+## Quick Start
+
+``` r
+library(claimreserve)
+
+# 1. Sample transactional insurance claims
+claims_data <- data.frame(
+  accident_year = c(2021, 2021, 2021, 2022, 2022, 2023),
+  dev_year      = c(1,    2,    3,    1,    2,    1),
+  paid_amount   = c(100,  50,   25,   120,  60,   110)
+)
+
+# 2. Build cumulative triangle
+tri <- make_triangle(
+  data   = claims_data,
+  origin = "accident_year",
+  dev    = "dev_year",
+  amount = "paid_amount"
+)
+print(tri)
+
+# 3. Fit Chain-Ladder model and estimate IBNR
+res <- fit_chain_ladder(tri)
+
+# View volume-weighted factors
+res$factors
+
+# View required reserves by origin year
+res$ibnr_reserve
+
+# 4. Plot development trajectory
+plot_development(tri)
+```
+
+------------------------------------------------------------------------
+
+## Mathematical Formulation
+
+The link ratios ($f_j$) are estimated via volume-weighted averages:
+
+$$f_j = \frac{\sum_{i=1}^{n-j} C_{i, j+1}}{\sum_{i=1}^{n-j} C_{i,j}}$$
+
+Where $C_{i,j}$ represents the cumulative claims for accident year $i$ at development period $j$.
+
+------------------------------------------------------------------------
+
+## License
+
+This package is licensed under the MIT License.
