@@ -1,0 +1,3 @@
+## code to prepare `sample_claims` dataset goes here
+
+usethis::use_data(sample_claims, overwrite = TRUE)
