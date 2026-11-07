@@ -1,0 +1,21 @@
+#' Create a Cumulative Claims Run-Off Triangle
+#'
+#' @param data A data.frame containing origin, dev, and amount columns.
+#' @param origin Column name for accident or origin period.
+#' @param dev Column name for development period.
+#' @param amount Column name for loss amounts.
+#' @return A numeric matrix representing the cumulative run-off triangle.
+#' @export
+make_triangle <- function(data, origin, dev, amount) {
+  agg <- aggregate(data[[amount]],
+                   by = list(origin = data[[origin]], dev = data[[dev]]),
+                   FUN = sum, na.rm = TRUE)
+
+  mat <- tapply(agg$x, list(agg$origin, agg$dev), identity)
+  mat[is.na(mat)] <- 0
+
+  t(apply(mat, 1, cumsum))
+}
+
+
+ 
